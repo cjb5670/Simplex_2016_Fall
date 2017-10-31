@@ -276,7 +276,62 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	// center
+	float fcenter = 0.0f;
+
+	// top = center + height
+	float ftop = fcenter + a_fHeight;
+
+
+	// base 
+	vector3 point0(fcenter, fcenter, fcenter);
+
+	// top
+	vector3 point1(fcenter, ftop, fcenter);
+
+	// circle base = foreach subdivision
+		// (center + radius) * ((360/subdivisions) + (iteration - 1))
+	
+	// Craete and save Base angles
+	std::vector<float> fbaseAngles(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		fbaseAngles[i] = ((360 / a_nSubdivisions)* (i));
+	}
+
+	// Create and save Base Points
+	std::vector<vector3> v3BasePoints(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// if not already drawn
+		v3BasePoints[i] = (vector3((a_fRadius*cos(fbaseAngles[i] * PI / 180.0)), fcenter, (a_fRadius*sin(fbaseAngles[i] * PI / 180.0))));
+	}
+	//base
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddTri(v3BasePoints[i + 1], point0, v3BasePoints[i]);
+		}
+	}
+	// Connect final point.
+	AddTri(v3BasePoints[a_nSubdivisions], point0, v3BasePoints[0]);
+
+
+	// top
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddTri(v3BasePoints[i], point1, v3BasePoints[i + 1]);
+		}
+	}
+	// Connect final point.
+	AddTri(v3BasePoints[a_nSubdivisions], point1, v3BasePoints[0]);
+
 	// -------------------------------
 
 	// Adding information about color
@@ -300,7 +355,73 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	// center
+	float fcenter = 0.0f;
+
+	// top = center + height
+	float ftop = fcenter + a_fHeight;
+
+
+	// base 
+	vector3 point0(fcenter, fcenter, fcenter);
+
+	// top
+	vector3 point1(fcenter, ftop, fcenter);
+
+	// circle base = foreach subdivision
+	// (center + radius) * ((360/subdivisions) + (iteration - 1))
+
+	// Craete and save Base angles
+	std::vector<float> fbaseAngles(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		fbaseAngles[i] = ((360 / a_nSubdivisions)* (i));
+	}
+
+	// Create and save Base Points
+	std::vector<vector3> v3BasePoints(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// if not already drawn
+		v3BasePoints[i] = (vector3((a_fRadius*cos(fbaseAngles[i] * PI / 180.0)), fcenter, (a_fRadius*sin(fbaseAngles[i] * PI / 180.0))));
+	}
+	//base
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddTri(v3BasePoints[i + 1], point0, v3BasePoints[i]);
+		}
+	}
+	// Connect final point.
+	AddTri(v3BasePoints[a_nSubdivisions], point0, v3BasePoints[0]);
+
+
+	// top
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddTri(v3BasePoints[i]  + point1, point1, v3BasePoints[i + 1] + point1);
+		}
+	}
+	// Connect final point.
+	AddTri(v3BasePoints[a_nSubdivisions] + point1, point1, v3BasePoints[0] + point1);
+
+
+	// Conect base and top.
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddQuad(v3BasePoints[i], v3BasePoints[i] + point1, v3BasePoints[i + 1], v3BasePoints[i + 1] + point1);
+		}
+	}
+	// Connect final point.
+	AddQuad(v3BasePoints[a_nSubdivisions], v3BasePoints[a_nSubdivisions] + point1, v3BasePoints[0], v3BasePoints[0] + point1);
 	// -------------------------------
 
 	// Adding information about color
@@ -329,9 +450,95 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	// center
+	float fcenter = 0.0f;
+
+	// top = center + height
+	float ftop = fcenter + a_fHeight;
+
+
+	// base 
+	vector3 point0(fcenter, fcenter, fcenter);
+
+	// top
+	vector3 point1(fcenter, ftop, fcenter);
+
+	// Craete and save Base angles
+	std::vector<float> fbaseAngles(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		fbaseAngles[i] = ((360 / a_nSubdivisions)* (i));
+	}
+
+	// Create and save Outer Base Points
+	std::vector<vector3> v3BaseOuterPoints(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// if not already drawn
+		v3BaseOuterPoints[i] = (vector3((a_fOuterRadius*cos(fbaseAngles[i] * PI / 180.0)), fcenter, (a_fOuterRadius*sin(fbaseAngles[i] * PI / 180.0))));
+	}
+
+	// Create and save inner base points
+	std::vector<vector3> v3BaseInnerPoints(a_nSubdivisions + 1);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		// if not already drawn
+		v3BaseInnerPoints[i] = (vector3((a_fInnerRadius*cos(fbaseAngles[i] * PI / 180.0)), fcenter, (a_fInnerRadius*sin(fbaseAngles[i] * PI / 180.0))));
+	}
+
+	//base
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddQuad(v3BaseInnerPoints[i], v3BaseOuterPoints[i ], v3BaseInnerPoints[i + 1], v3BaseOuterPoints[i + 1]);
+		}
+	}
+	// Connect final point.
+	AddQuad(v3BaseInnerPoints[a_nSubdivisions], v3BaseOuterPoints[a_nSubdivisions], v3BaseInnerPoints[0], v3BaseOuterPoints[0]);
+
+
+	// top
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddQuad(v3BaseInnerPoints[i + 1] + point1, v3BaseOuterPoints[i + 1] + point1, v3BaseInnerPoints[i] + point1, v3BaseOuterPoints[i] + point1);
+		}
+	}
+	// Connect final point.
+	AddQuad(v3BaseInnerPoints[a_nSubdivisions] + point1, v3BaseOuterPoints[a_nSubdivisions] + point1, v3BaseInnerPoints[0] + point1, v3BaseOuterPoints[0] + point1);
+
+
+	// Conect base and top on outside 
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddQuad(v3BaseOuterPoints[i], v3BaseOuterPoints[i] + point1, v3BaseOuterPoints[i + 1], v3BaseOuterPoints[i + 1] + point1);
+		}
+	}
+	// Connect final point.
+	AddQuad(v3BaseOuterPoints[a_nSubdivisions], v3BaseOuterPoints[a_nSubdivisions] + point1, v3BaseOuterPoints[0], v3BaseOuterPoints[0] + point1);
+
+	// Conect base and top on inside 
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// if not last subdivision
+		if (i != a_nSubdivisions)
+		{
+			AddQuad(v3BaseInnerPoints[i + 1 ], v3BaseInnerPoints[i + 1] + point1, v3BaseInnerPoints[i], v3BaseInnerPoints[i] + point1);
+		}
+	}
+	// Connect final point.
+	AddQuad(v3BaseInnerPoints[a_nSubdivisions], v3BaseInnerPoints[a_nSubdivisions] + point1, v3BaseInnerPoints[0], v3BaseInnerPoints[0] + point1);
+
+
 	// -------------------------------
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -386,8 +593,164 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+
+	float fcenter = 0.0f;
+	float ftop;
+	float foffset= 0;
+	float radius;
+	vector3 point0;
+	vector3 point1;
+	// Makes bottom of sphere
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// center
+		fcenter = 0.0f;
+
+		// top = center + height
+		 ftop = (fcenter + 0.05f)*(i);
+	
+		 radius = (a_fRadius * (i ^ 2) * .3);
+		
+		// base 
+		vector3 point0(fcenter, fcenter, fcenter);
+
+		// top
+		vector3 point1(fcenter, ftop, fcenter);
+
+		// circle base = foreach subdivision
+		// (center + radius) * ((360/subdivisions) + (iteration - 1))
+
+		// Craete and save Base angles
+		std::vector<float> fbaseAngles(a_nSubdivisions + 1);
+		for (int j = 0; j <= a_nSubdivisions; j++)
+		{
+			fbaseAngles[j] = ((360 / a_nSubdivisions)* (j));
+		}
+
+		// Create and save Base Points
+		std::vector<vector3> v3BasePoints(a_nSubdivisions + 1);
+		for (int j = 0; j <= a_nSubdivisions; j++)
+		{
+			// if not already drawn
+			v3BasePoints[j] = (vector3((radius*cos(fbaseAngles[j] * PI / 180.0)), ftop, (radius*sin(fbaseAngles[j] * PI / 180.0))));
+		}
+		//base
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddTri(v3BasePoints[j + 1], point0, v3BasePoints[j]);
+			}
+		}
+		// Connect final point.
+		AddTri(v3BasePoints[a_nSubdivisions], point0, v3BasePoints[0]);
+
+
+		// top
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddTri(v3BasePoints[j] + point1, point1, v3BasePoints[j + 1] + point1);
+			}
+		}
+		// Connect final point.
+		AddTri(v3BasePoints[a_nSubdivisions] + point1, point1, v3BasePoints[0] + point1);
+
+
+		// Conect base and top.
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddQuad(v3BasePoints[j], v3BasePoints[j] + point1, v3BasePoints[j + 1], v3BasePoints[j + 1] + point1);
+			}
+		}
+		// Connect final point.
+		AddQuad(v3BasePoints[a_nSubdivisions], v3BasePoints[a_nSubdivisions] + point1, v3BasePoints[0], v3BasePoints[0] + point1);
+		// -------------------------------
+		// adjust offset
+		foffset += ftop;
+	}
+
+	// Makes top of sphere
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		// center
+		fcenter = 0.0f;
+
+		// top = center + height
+		ftop = (fcenter + 0.05f)*(i);
+
+		radius = (a_fRadius * (i ^ 2) * .3);
+
+		// base 
+		vector3 point0(fcenter, fcenter, fcenter);
+
+		// top
+		vector3 point1(fcenter, ftop, fcenter);
+
+		// circle base = foreach subdivision
+		// (center + radius) * ((360/subdivisions) + (iteration - 1))
+
+		// Craete and save Base angles
+		std::vector<float> fbaseAngles(a_nSubdivisions + 1);
+		for (int j = 0; j <= a_nSubdivisions; j++)
+		{
+			fbaseAngles[j] = ((360 / a_nSubdivisions)* (j));
+		}
+
+		// Create and save Base Points
+		std::vector<vector3> v3BasePoints(a_nSubdivisions + 1);
+		for (int j = 0; j <= a_nSubdivisions; j++)
+		{
+			// if not already drawn
+			//negative
+			v3BasePoints[j] = -(vector3((radius*cos(fbaseAngles[j] * PI / 180.0)), ftop - foffset, (radius*sin(fbaseAngles[j] * PI / 180.0))));
+		}
+		//base
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddTri(v3BasePoints[j + 1], point0, v3BasePoints[j]);
+			}
+		}
+		// Connect final point.
+		AddTri(v3BasePoints[a_nSubdivisions], point0, v3BasePoints[0]);
+
+
+		// top
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddTri(v3BasePoints[j] + point1, point1, v3BasePoints[j + 1] + point1);
+			}
+		}
+		// Connect final point.
+		AddTri(v3BasePoints[a_nSubdivisions] + point1, point1, v3BasePoints[0] + point1);
+
+
+		// Conect base and top.
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			// if not last subdivision
+			if (j != a_nSubdivisions)
+			{
+				AddQuad(v3BasePoints[j], v3BasePoints[j] + point1, v3BasePoints[j + 1], v3BasePoints[j + 1] + point1);
+			}
+		}
+		// Connect final point.
+		AddQuad(v3BasePoints[a_nSubdivisions], v3BasePoints[a_nSubdivisions] + point1, v3BasePoints[0], v3BasePoints[0] + point1);
+		// -------------------------------
+	}
+
 	// -------------------------------
 
 	// Adding information about color
