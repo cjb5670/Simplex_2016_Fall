@@ -15,6 +15,9 @@ class MyCamera
 	vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
 	vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
 	vector3 m_v3Up = vector3(0.0f, 1.0f, 0.0f); //What is up
+	vector3 m_v3Forward = Normalize(m_v3Target - m_v3Position);
+	vector3 m_v3Left = CrossProduct(m_v3Up, m_v3Forward);
+	vector3 m_v3Right = CrossProduct(m_v3Forward, m_v3Up);
 
 	bool m_bPerspective = true; //perspective view? False is Orthographic
 
@@ -29,6 +32,9 @@ class MyCamera
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
 public:
+
+	float fAngleX = 0.0f;
+	float fAngleY = 3.0f;
 	/*
 	USAGE: Constructor
 	ARGUMENTS: ---
@@ -130,6 +136,15 @@ public:
 	*/
 	vector3 GetUp(void);
 
+
+	// Gets the forward vector
+	vector3 GetForward(void);
+
+	vector3 GetLeft(void);
+
+	vector3 GetRight(void);
+
+
 	/*
 	USAGE: Sets Perspective Camera
 	ARGUMENTS: bool a_bPerspective = true -> is camera perspective or orthographic
@@ -211,6 +226,10 @@ public:
 	OUTPUT: ---
 	*/
 	void CalculateProjectionMatrix(void);
+
+	vector3 Normalize(vector3);
+
+	vector3 CrossProduct(vector3 m_vA, vector3 m_vB);
 };
 
 } //namespace Simplex

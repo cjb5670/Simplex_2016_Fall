@@ -67,10 +67,35 @@ void Application::ProcessMouseScroll(sf::Event a_event)
 //Keyboard
 void Application::ProcessKeyPressed(sf::Event a_event)
 {
+	
 	switch (a_event.key.code)
 	{
 	default: break;
 	case sf::Keyboard::Space:
+		break;
+
+	case sf::Keyboard::W:
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + m_pCamera->GetForward(), 
+			m_pCamera->GetTarget() + m_pCamera->GetForward(), 
+			m_pCamera->GetUp());
+		break;
+
+	case sf::Keyboard::S:
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() - m_pCamera->GetForward(), 
+			m_pCamera->GetTarget() - m_pCamera->GetForward(), 
+			m_pCamera->GetUp());
+		break;
+
+	case sf::Keyboard::A:
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + m_pCamera->GetLeft(), 
+			m_pCamera->GetTarget() + m_pCamera->GetLeft(), 
+			m_pCamera->GetUp());
+		break;
+
+	case sf::Keyboard::D:
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + m_pCamera->GetRight(), 
+			m_pCamera->GetTarget() + m_pCamera->GetRight(), 
+			m_pCamera->GetUp());
 		break;
 	}
 	//gui
@@ -344,32 +369,35 @@ void Application::CameraRotation(float a_fSpeed)
 	MouseY = pt.y;
 
 	//Calculate the difference in view with the angle
-	float fAngleX = 0.0f;
-	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
 	if (MouseX < CenterX)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
-		fAngleY += fDeltaMouse * a_fSpeed;
+		m_pCamera->fAngleY += fDeltaMouse * a_fSpeed;
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
-		fAngleY -= fDeltaMouse * a_fSpeed;
+		m_pCamera->fAngleY -= fDeltaMouse * a_fSpeed;
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
-		fAngleX -= fDeltaMouse * a_fSpeed;
+		m_pCamera->fAngleX -= fDeltaMouse * a_fSpeed;
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
-		fAngleX += fDeltaMouse * a_fSpeed;
+		m_pCamera->fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
+	m_pCamera->SetTarget((m_pCamera->GetPosition() + 
+		vector3((cos(m_pCamera->fAngleX) * sin(m_pCamera->fAngleY)),
+		-sin(m_pCamera->fAngleX), 
+		(cos(m_pCamera->fAngleX) * cos(m_pCamera->fAngleY)))));
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
+	
 }
 //Keyboard
 void Application::ProcessKeyboard(void)
@@ -378,6 +406,9 @@ void Application::ProcessKeyboard(void)
 	This is used for things that are continuously happening,
 	for discreet on/off use ProcessKeyboardPressed/Released
 	*/
+	//TODO: Put code here?
+	//if ()
+
 #pragma region Camera Position
 	float fSpeed = 0.1f;
 	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
@@ -412,6 +443,7 @@ void Application::ProcessJoystick(void)
 #pragma endregion
 #pragma region Camera Orientation
 	//Change the Yaw and the Pitch of the camera
+	// TODO place code here?
 #pragma endregion
 #pragma region ModelOrientation Orientation
 	m_qArcBall = quaternion(vector3(glm::radians(m_pController[m_uActCont]->axis[SimplexAxis_POVY] / 20.0f), 0.0f, 0.0f)) * m_qArcBall;

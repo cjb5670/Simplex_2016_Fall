@@ -20,6 +20,18 @@ void Simplex::MyCamera::SetHorizontalPlanes(vector2 a_v2Horizontal) { m_v2Horizo
 
 void Simplex::MyCamera::SetVerticalPlanes(vector2 a_v2Vertical) { m_v2Vertical = a_v2Vertical; }
 
+vector3 Simplex::MyCamera::GetPosition(void) { return m_v3Position; }
+
+vector3 Simplex::MyCamera::GetTarget(void) { return m_v3Target; }
+
+vector3 Simplex::MyCamera::GetUp(void) { return m_v3Up; }
+
+vector3 Simplex::MyCamera::GetForward(void) { return m_v3Forward; }
+
+vector3 Simplex::MyCamera::GetLeft(void) { return CrossProduct(m_v3Up, m_v3Forward); }
+
+vector3 Simplex::MyCamera::GetRight(void) { return CrossProduct(m_v3Forward, m_v3Up); }
+
 matrix4 Simplex::MyCamera::GetProjectionMatrix(void) { return m_m4Projection; }
 
 matrix4 Simplex::MyCamera::GetViewMatrix(void) { CalculateViewMatrix(); return m_m4View; }
@@ -129,8 +141,12 @@ void Simplex::MyCamera::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v
 {
 	m_v3Position = a_v3Position;
 	m_v3Target = a_v3Target;
-	m_v3Up = a_v3Position + a_v3Upward;
+	m_v3Up = a_v3Upward;
 	CalculateProjectionMatrix();
+	m_v3Forward = Normalize(m_v3Target - m_v3Position);
+	m_v3Left = CrossProduct(m_v3Up, m_v3Forward);
+	m_v3Right = CrossProduct(m_v3Forward, m_v3Up);
+	
 }
 
 void Simplex::MyCamera::CalculateViewMatrix(void)
@@ -153,4 +169,23 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 										m_v2Vertical.x, m_v2Vertical.y, //vertical
 										m_v2NearFar.x, m_v2NearFar.y); //near and far
 	}
+}
+
+vector3 Simplex::MyCamera::Normalize(vector3 v)
+{
+	float length = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+	vector3 retVec = vector3(0, 0, 0);
+	if (length != 0)
+	{
+		retVec.x = v.x / length;
+		retVec.y = v.y / length;
+		retVec.z = v.z / length;
+	}
+	return retVec;
+}
+
+vector3 Simplex::MyCamera::CrossProduct(vector3 m_vA, vector3 m_vB)
+{
+	vector3 retVec = vector3((m_vA.y * m_vB.z) - (m_vA.z*m_vB.y), (m_vA.z * m_vB.x) - (m_vA.x * m_vB.z), (m_vA.x * m_vB.y) - (m_vA.y * m_vB.x));
+	return retVec;
 }
