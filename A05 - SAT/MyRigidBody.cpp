@@ -24,6 +24,15 @@ void MyRigidBody::Init(void)
 	m_v3ARBBSize = ZERO_V3;
 
 	m_m4ToWorld = IDENTITY_M4;
+
+
+	thisMinProj = 99999999999;
+	thisMaxProj = 0;
+	thisCurrentProj = 0;
+
+	otherMinProj = 9999999999999;
+	otherMaxProj = 0;
+	otherCurrentProj = 0;
 }
 void MyRigidBody::Swap(MyRigidBody& a_pOther)
 {
@@ -228,11 +237,11 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 {
 	//check if spheres are colliding as pre-test
 	bool bColliding = (glm::distance(GetCenterGlobal(), a_pOther->GetCenterGlobal()) < m_fRadius + a_pOther->m_fRadius);
-	
+
 	//if they are colliding check the SAT
 	if (bColliding)
 	{
-		if(SAT(a_pOther) != eSATResults::SAT_NONE)
+		if (SAT(a_pOther) != eSATResults::SAT_NONE)
 			bColliding = false;// reset to false
 	}
 
@@ -286,7 +295,128 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	Simplex that might help you [eSATResults] feel free to use it.
 	(eSATResults::SAT_NONE has a value of 0)
 	*/
+	// save normals
+	std::vector<vector3> thisNormals;
+	std::vector<vector3> otherNormals;
 
-	//there is no axis test that separates this two objects
-	return eSATResults::SAT_NONE;
+	// AABB will only have 3 normals
+	thisNormals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	thisNormals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	thisNormals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+	otherNormals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	otherNormals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+	otherNormals.push_back(glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// each normal in this.
+	for (int i = 0; i < thisNormals.size(); i++)
+	{
+		// find the min and max projections for each object along the normal
+		thisMinProj = glm::dot(thisNormals[0], thisNormals[i]);
+		thisMaxProj = thisMinProj;
+		
+		// sets mins and maxes of this
+		for (int j = 1; j < thisNormals.size(); j++)
+		{
+			thisCurrentProj = glm::dot(thisNormals[j], thisNormals[i]);
+
+			if (thisMinProj > thisCurrentProj)
+			{
+				thisMinProj = thisCurrentProj;
+			}
+
+			if (thisCurrentProj > thisMaxProj)
+			{
+				thisMaxProj = thisCurrentProj;
+			}
+		}
+
+		// sets mins and maxes of other
+		for (int j = 1; j < otherNormals.size(); j++)
+		{
+			otherCurrentProj = glm::dot(otherNormals[j], thisNormals[i]);
+
+			if (otherMinProj > otherCurrentProj)
+			{
+				otherMinProj = otherCurrentProj;
+			}
+
+			if (otherCurrentProj > otherMaxProj)
+			{
+				otherMaxProj = otherCurrentProj;
+			}
+		}
+
+		
+		// if the maximum projection of this is less than minimum projection of other, then apart. If any apart, break.
+		apart = thisMaxProj < otherMinProj || otherMaxProj < thisMinProj;
+		if (apart)
+		{
+			break;
+		}
+	}
+
+	if (!apart)
+	{
+		// each normal in other
+		for (int i = 0; i < otherNormals.size(); i++)
+		{
+			// Find min and max of other
+			// find the min and max projections for each object along the normal
+			otherMinProj = glm::dot(otherNormals[0], otherNormals[i]);
+			otherMaxProj = otherMinProj;
+
+			// sets mins and maxes of this
+			for (int j = 1; j < thisNormals.size(); j++)
+			{
+				thisCurrentProj = glm::dot(thisNormals[j], otherNormals[i]);
+
+				if (thisMinProj > thisCurrentProj)
+				{
+					thisMinProj = thisCurrentProj;
+				}
+
+				if (thisCurrentProj > thisMaxProj)
+				{
+					thisMaxProj = thisCurrentProj;
+				}
+			}
+
+			// sets mins and maxes of other
+			for (int j = 1; j < otherNormals.size(); j++)
+			{
+				otherCurrentProj = glm::dot(otherNormals[j], otherNormals[i]);
+
+				if (otherMinProj > otherCurrentProj)
+				{
+					otherMinProj = otherCurrentProj;
+				}
+
+				if (otherCurrentProj > otherMaxProj)
+				{
+					otherMaxProj = otherCurrentProj;
+				}
+			}
+
+			// if the maximum projection of this is less than minimum projection of other, then apart. If any apart, break.
+			apart = thisMaxProj < otherMinProj || otherMaxProj < thisMinProj;
+			if (apart)
+			{
+				break;
+			}
+
+		}
+
+	}
+	if (apart)
+	{
+		return 1;
+	}
+	else
+	{
+		//there is no axis test that separates this two objects
+		return eSATResults::SAT_NONE;
+		// else return 1
+	}
 }

@@ -38,6 +38,16 @@ class MyRigidBody
 
 	std::set<MyRigidBody*> m_CollidingRBSet; //set of rigid bodies this one is colliding with
 
+	bool apart;
+
+	float thisMinProj;
+	float thisMaxProj;
+	float thisCurrentProj;
+
+	float otherMinProj;
+	float otherMaxProj;
+	float otherCurrentProj;
+
 public:
 	/*
 	Usage: Constructor
