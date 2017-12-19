@@ -30,7 +30,10 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
+
 	m_pEntityMngr->Update();
+	tree.GenRoot();
+
 }
 void Application::Update(void)
 {
@@ -46,6 +49,9 @@ void Application::Update(void)
 	//Update Entity Manager
 	m_pEntityMngr->Update();
 
+	//Update tree
+	tree.Update(tree.root);
+
 	//Add objects to render list
 	m_pEntityMngr->AddEntityToRenderList(-1, true);
 }
@@ -55,7 +61,7 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
-	//m_pRoot->Display();
+	tree.root->Draw();
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();

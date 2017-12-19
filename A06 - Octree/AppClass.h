@@ -10,7 +10,8 @@ Date: 2017/06
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
-#include "MyEntityManager.h"
+#include "Octree.h"
+
 
 namespace Simplex
 {
@@ -21,6 +22,9 @@ class Application
 	uint m_uOctantID = -1; //Index of Octant to display
 	uint m_uObjects = 0; //Number of objects in the scene
 	uint m_uOctantLevels = 0; //Number of levels in the octree
+	
+
+
 private:
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
 
@@ -60,6 +64,13 @@ private:
 	sf::Music m_soundBGM; //background music
 
 public:
+	float grandMinx = 99999999;
+	float grandMaxx = 0;
+	float grandMiny = 99999999;
+	float grandMaxy = 0;
+	float grandMinz = 99999999;
+	float grandMaxz = 0;
+	Octree tree;
 #pragma region Constructor / Run / Destructor
 	/*
 	USAGE: Constructor

@@ -24,17 +24,18 @@ namespace Simplex
 		vector3 max;
 
 		std::vector<int> EntityList; 
+		std::vector<MyEntity> fullyContained;
 
 		Ocleaf* Parent;
 		std::vector<Ocleaf*> leaves;
 
 		MeshManager* meshManager;
-		MyEntityManager* entityManager;
 
 		// Methods
 		Ocleaf();
 		~Ocleaf();
-		bool Contains(MyEntity object);
+		bool Contains(MyEntity* object);
+		void Draw();
 	};
 }
 #endif

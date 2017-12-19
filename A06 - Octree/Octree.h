@@ -8,19 +8,22 @@ namespace Simplex
 	{
 	public:
 		// Members
-		Ocleaf Parent;
+		Ocleaf* root;
 		int levelsCount;
+		MeshManager* meshManager;
+		MyEntityManager* entityManager;
 		
-		std::vector<Ocleaf> allLeaves;
+		//std::vector<Ocleaf*> allLeaves;
 
 
 		// Methods
 		Octree();
 		~Octree();
-		void GenTree(uint levels);
-		void SubDivide(Ocleaf leaf);
-		void DeleteLevel(Ocleaf leaf);
-		std::vector<Ocleaf> leavesInLevel(int _level);
+		void GenRoot();
+		void SubDivide(Ocleaf* leaf, uint level);
+		void DeleteLevel(Ocleaf* leaf);
+		void Update(Ocleaf* parent);
+		//std::vector<Ocleaf*> leavesInLevel(int _level);
 		
 	};
 }
